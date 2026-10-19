@@ -1,0 +1,758 @@
+[
+  {
+    "request": "Which products need restocking?",
+    "inputs": {},
+    "output": {
+      "workflow_id": "WF001",
+      "workflow_name": "Inventory Restock Check",
+      "status": "success",
+      "steps": [
+        {
+          "step": "Workflow loaded from Excel",
+          "status": "success",
+          "detail": "WF001: Inventory Restock Check"
+        },
+        {
+          "step": "Fetch inventory",
+          "status": "success",
+          "detail": "3 products loaded"
+        },
+        {
+          "step": "Check threshold and calculate reorder quantity",
+          "status": "success",
+          "detail": "2 products below minimum"
+        }
+      ],
+      "result": {
+        "restock_list": [
+          {
+            "sku": "A100",
+            "product_name": "Wireless Mouse",
+            "current_stock": 4,
+            "minimum_stock": 10,
+            "suggested_reorder_quantity": 21
+          },
+          {
+            "sku": "A102",
+            "product_name": "Laptop Stand",
+            "current_stock": 2,
+            "minimum_stock": 6,
+            "suggested_reorder_quantity": 13
+          }
+        ],
+        "count": 2,
+        "note": "Demo inventory data."
+      },
+      "executed_at": "2026-10-19T12:16:15",
+      "selection": {
+        "workflow_id": "WF001",
+        "workflow_name": "Inventory Restock Check",
+        "confidence": 0.6,
+        "rationale": "Selected using keyword-based fallback; configure OPENAI_API_KEY for LLM routing.",
+        "router": "Fallback"
+      },
+      "workflow_definition": {
+        "trigger": "User asks which products need restocking",
+        "inputs": "Product inventory CSV; minimum stock threshold",
+        "steps": "Load inventory → compare current stock with minimum threshold → identify low-stock products → calculate reorder quantity → generate restock list",
+        "decision_logic": "If current_stock < minimum_stock, mark product for restock",
+        "tools_required": "CSV reader; calculator",
+        "expected_output": "List of products requiring restock with current stock, threshold, and suggested reorder quantity"
+      }
+    }
+  },
+  {
+    "request": "Find products where vendor price differs by more than 10%.",
+    "inputs": {},
+    "output": {
+      "workflow_id": "WF002",
+      "workflow_name": "Product Price Validation",
+      "status": "success",
+      "steps": [
+        {
+          "step": "Workflow loaded from Excel",
+          "status": "success",
+          "detail": "WF002: Product Price Validation"
+        },
+        {
+          "step": "Match by SKU and compare prices",
+          "status": "success",
+          "detail": "3 products matched"
+        },
+        {
+          "step": "Flag differences above 10%",
+          "status": "success",
+          "detail": "2 exceptions found"
+        }
+      ],
+      "result": {
+        "validation_report": [
+          {
+            "sku": "A100",
+            "product_name": "Wireless Mouse",
+            "internal_price": 20.0,
+            "vendor_price": 23.5,
+            "difference_percent": 17.5,
+            "exception": true
+          },
+          {
+            "sku": "A101",
+            "product_name": "USB-C Hub",
+            "internal_price": 35.0,
+            "vendor_price": 36.0,
+            "difference_percent": 2.86,
+            "exception": false
+          },
+          {
+            "sku": "A102",
+            "product_name": "Laptop Stand",
+            "internal_price": 40.0,
+            "vendor_price": 32.0,
+            "difference_percent": 20.0,
+            "exception": true
+          }
+        ],
+        "exceptions": [
+          {
+            "sku": "A100",
+            "product_name": "Wireless Mouse",
+            "internal_price": 20.0,
+            "vendor_price": 23.5,
+            "difference_percent": 17.5,
+            "exception": true
+          },
+          {
+            "sku": "A102",
+            "product_name": "Laptop Stand",
+            "internal_price": 40.0,
+            "vendor_price": 32.0,
+            "difference_percent": 20.0,
+            "exception": true
+          }
+        ],
+        "threshold_percent": 10
+      },
+      "executed_at": "2026-10-19T12:16:15",
+      "selection": {
+        "workflow_id": "WF002",
+        "workflow_name": "Product Price Validation",
+        "confidence": 0.75,
+        "rationale": "Selected using keyword-based fallback; configure OPENAI_API_KEY for LLM routing.",
+        "router": "Fallback"
+      },
+      "workflow_definition": {
+        "trigger": "User asks to validate product prices",
+        "inputs": "Product CSV; vendor price list",
+        "steps": "Load product prices → match products by SKU → compare internal and vendor prices → calculate percentage difference → flag exceptions",
+        "decision_logic": "Flag when price difference exceeds 10%",
+        "tools_required": "CSV reader; calculator",
+        "expected_output": "Validation report showing matched products, price differences, and exceptions"
+      }
+    }
+  },
+  {
+    "request": "Process this vendor spreadsheet and show invalid rows.",
+    "inputs": {},
+    "output": {
+      "workflow_id": "WF003",
+      "workflow_name": "Vendor File Processing",
+      "status": "success",
+      "steps": [
+        {
+          "step": "Workflow loaded from Excel",
+          "status": "success",
+          "detail": "WF003: Vendor File Processing"
+        },
+        {
+          "step": "Read and normalize columns",
+          "status": "success",
+          "detail": "4 columns normalized"
+        },
+        {
+          "step": "Validate required fields",
+          "status": "success",
+          "detail": "2 invalid rows"
+        }
+      ],
+      "result": {
+        "cleaned_rows": [
+          {
+            "sku": "V001",
+            "product_name": "Travel Mug",
+            "unit_price": 12.5,
+            "category": "Drinkware"
+          }
+        ],
+        "invalid_rows": [
+          {
+            "sku": "",
+            "product_name": "Desk Lamp",
+            "unit_price": 21.0,
+            "category": "Lighting"
+          },
+          {
+            "sku": "V003",
+            "product_name": "",
+            "unit_price": 8.0,
+            "category": "Stationery"
+          }
+        ],
+        "summary": {
+          "input_rows": 3,
+          "clean_rows": 1,
+          "invalid_rows": 2
+        },
+        "note": "Demo vendor file; replace with a user-uploaded CSV/XLSX path in production."
+      },
+      "executed_at": "2026-10-19T12:16:15",
+      "selection": {
+        "workflow_id": "WF003",
+        "workflow_name": "Vendor File Processing",
+        "confidence": 0.75,
+        "rationale": "Selected using keyword-based fallback; configure OPENAI_API_KEY for LLM routing.",
+        "router": "Fallback"
+      },
+      "workflow_definition": {
+        "trigger": "User provides a vendor file for processing",
+        "inputs": "CSV/XLSX file containing vendor product data",
+        "steps": "Read file → detect columns → normalize column names → validate required fields → identify invalid rows → produce cleaned dataset",
+        "decision_logic": "Rows missing SKU or product name are invalid",
+        "tools_required": "Excel/CSV parser; data validation",
+        "expected_output": "Cleaned file plus validation summary and invalid-row report"
+      }
+    }
+  },
+  {
+    "request": "Generate SEO content for this product.",
+    "inputs": {
+      "product_name": "Travel Mug",
+      "category": "Drinkware",
+      "attributes": "double-wall insulation",
+      "material": "stainless steel",
+      "color": "silver",
+      "target_audience": "commuters"
+    },
+    "output": {
+      "workflow_id": "WF004",
+      "workflow_name": "Product Description Generator",
+      "status": "success",
+      "steps": [
+        {
+          "step": "Workflow loaded from Excel",
+          "status": "success",
+          "detail": "WF004: Product Description Generator"
+        },
+        {
+          "step": "Validate product inputs",
+          "status": "success",
+          "detail": "Product name received"
+        },
+        {
+          "step": "Generate description and SEO fields",
+          "status": "success",
+          "detail": "Generated from supplied attributes; missing values explicitly marked"
+        }
+      ],
+      "result": {
+        "product_description": "Travel Mug is a Drinkware product. Key attributes: double-wall insulation. Material: stainless steel. Color: silver. Designed for: commuters.",
+        "short_description": "Travel Mug — double-wall insulation.",
+        "seo_title": "Travel Mug | Drinkware",
+        "meta_description": "Discover Travel Mug. Attributes: double-wall insulation. Material: stainless steel.",
+        "missing_fields": [],
+        "note": "Template generation; connect an LLM for richer copy."
+      },
+      "executed_at": "2026-10-19T12:16:15",
+      "selection": {
+        "workflow_id": "WF004",
+        "workflow_name": "Product Description Generator",
+        "confidence": 0.6,
+        "rationale": "Selected using keyword-based fallback; configure OPENAI_API_KEY for LLM routing.",
+        "router": "Fallback"
+      },
+      "workflow_definition": {
+        "trigger": "User asks to generate product content",
+        "inputs": "Product name; category; attributes; material; color; target audience",
+        "steps": "Validate required attributes → create product description → generate short description → generate SEO title → generate meta description",
+        "decision_logic": "Do not invent missing product attributes; explicitly mark missing information",
+        "tools_required": "LLM; text validation",
+        "expected_output": "Product description, short description, SEO title, and meta description"
+      }
+    }
+  },
+  {
+    "request": "Where is order ORD-1001?",
+    "inputs": {},
+    "output": {
+      "workflow_id": "WF005",
+      "workflow_name": "Customer Order Status",
+      "status": "success",
+      "steps": [
+        {
+          "step": "Workflow loaded from Excel",
+          "status": "success",
+          "detail": "WF005: Customer Order Status"
+        },
+        {
+          "step": "Search order data",
+          "status": "success",
+          "detail": "Found ORD-1001"
+        },
+        {
+          "step": "Retrieve shipment information",
+          "status": "success",
+          "detail": "In transit"
+        }
+      ],
+      "result": {
+        "order": {
+          "order_id": "ORD-1001",
+          "customer_email": "alex@example.com",
+          "status": "Shipped",
+          "items": [
+            "Wireless Mouse",
+            "USB-C Hub"
+          ],
+          "shipment_status": "In transit",
+          "tracking_number": "TRK-784512",
+          "estimated_delivery": "2026-10-21"
+        }
+      },
+      "executed_at": "2026-10-19T12:16:15",
+      "selection": {
+        "workflow_id": "WF005",
+        "workflow_name": "Customer Order Status",
+        "confidence": 0.75,
+        "rationale": "Selected using keyword-based fallback; configure OPENAI_API_KEY for LLM routing.",
+        "router": "Fallback"
+      },
+      "workflow_definition": {
+        "trigger": "User asks for an order status",
+        "inputs": "Order ID or customer email",
+        "steps": "Validate identifier → search order data → retrieve order status → retrieve shipment information → summarize current status",
+        "decision_logic": "If no order is found, ask for another identifier",
+        "tools_required": "Order database/API; shipment lookup",
+        "expected_output": "Order status, items, shipment status, and tracking information when available"
+      }
+    }
+  },
+  {
+    "request": "Find likely duplicate products in the catalog.",
+    "inputs": {},
+    "output": {
+      "workflow_id": "WF006",
+      "workflow_name": "Duplicate Product Detection",
+      "status": "success",
+      "steps": [
+        {
+          "step": "Workflow loaded from Excel",
+          "status": "success",
+          "detail": "WF006: Duplicate Product Detection"
+        },
+        {
+          "step": "Normalize identifiers and compare attributes",
+          "status": "success",
+          "detail": "1 duplicate groups identified"
+        }
+      ],
+      "result": {
+        "duplicate_groups": [
+          {
+            "product": {
+              "sku": "P100",
+              "product_name": "Wireless Mouse"
+            },
+            "matches": [
+              {
+                "sku": "P100",
+                "product_name": "Wireless Mouse",
+                "confidence": 1.0,
+                "classification": "definite duplicate (exact SKU match)"
+              },
+              {
+                "sku": "P101",
+                "product_name": "Wireless Mouse Pro",
+                "confidence": 0.91,
+                "classification": "possible duplicate"
+              }
+            ]
+          }
+        ],
+        "method": "Exact SKU is definite; name/attribute similarity >= 0.78 is possible."
+      },
+      "executed_at": "2026-10-19T12:16:15",
+      "selection": {
+        "workflow_id": "WF006",
+        "workflow_name": "Duplicate Product Detection",
+        "confidence": 0.6,
+        "rationale": "Selected using keyword-based fallback; configure OPENAI_API_KEY for LLM routing.",
+        "router": "Fallback"
+      },
+      "workflow_definition": {
+        "trigger": "User asks to find duplicate products",
+        "inputs": "Product catalog",
+        "steps": "Load products → normalize names/SKUs → compare identifiers → compare product attributes → group likely duplicates → assign confidence",
+        "decision_logic": "Exact SKU match is a definite duplicate; high attribute similarity is a possible duplicate",
+        "tools_required": "CSV/database reader; text similarity",
+        "expected_output": "Duplicate groups with matching fields and confidence level"
+      }
+    }
+  },
+  {
+    "request": "Create a campaign brief for the new collection.",
+    "inputs": {
+      "campaign_goal": "Launch autumn collection",
+      "dates": "2026-11-01 to 2026-11-14",
+      "products": [
+        "Travel Mug",
+        "Desk Lamp"
+      ],
+      "target_audience": "young professionals",
+      "promotion": "10% launch discount"
+    },
+    "output": {
+      "workflow_id": "WF007",
+      "workflow_name": "Marketing Campaign Brief",
+      "status": "success",
+      "steps": [
+        {
+          "step": "Workflow loaded from Excel",
+          "status": "success",
+          "detail": "WF007: Marketing Campaign Brief"
+        },
+        {
+          "step": "Identify objective and summarize products",
+          "status": "success",
+          "detail": "Launch autumn collection"
+        },
+        {
+          "step": "Generate messaging, channels, timeline and checklist",
+          "status": "success",
+          "detail": "Draft brief created"
+        }
+      ],
+      "result": {
+        "objective": "Launch autumn collection",
+        "target_audience": "young professionals",
+        "products": [
+          "Travel Mug",
+          "Desk Lamp"
+        ],
+        "promotion": "10% launch discount",
+        "dates": "2026-11-01 to 2026-11-14",
+        "messaging": "Introduce the collection with a clear benefit-led message for young professionals.",
+        "recommended_channels": [
+          "Email",
+          "Website landing page",
+          "Organic social media"
+        ],
+        "timeline": [
+          {
+            "period": "Pre-launch",
+            "action": "Prepare assets and teaser content"
+          },
+          {
+            "period": "Launch",
+            "action": "Publish campaign and send email"
+          },
+          {
+            "period": "Post-launch",
+            "action": "Review engagement and conversions"
+          }
+        ],
+        "checklist": [
+          "Approve copy and creative",
+          "Verify landing page",
+          "Schedule campaign",
+          "Track results"
+        ]
+      },
+      "executed_at": "2026-10-19T12:16:15",
+      "selection": {
+        "workflow_id": "WF007",
+        "workflow_name": "Marketing Campaign Brief",
+        "confidence": 0.75,
+        "rationale": "Selected using keyword-based fallback; configure OPENAI_API_KEY for LLM routing.",
+        "router": "Fallback"
+      },
+      "workflow_definition": {
+        "trigger": "User asks to create a campaign brief",
+        "inputs": "Campaign goal; product list; target audience; promotion; dates",
+        "steps": "Validate inputs → identify campaign objective → summarize products → create messaging → create channel recommendations → create campaign checklist",
+        "decision_logic": "If campaign goal or dates are missing, request them before generating the brief",
+        "tools_required": "LLM; product data reader",
+        "expected_output": "Structured campaign brief with objective, audience, messaging, channels, timeline, and checklist"
+      }
+    }
+  },
+  {
+    "request": "Classify these keywords and map them to pages.",
+    "inputs": {
+      "keywords": [
+        "how to choose a laptop stand",
+        "buy wireless mouse",
+        "wireless mouse price",
+        "Acme store"
+      ]
+    },
+    "output": {
+      "workflow_id": "WF008",
+      "workflow_name": "SEO Keyword Classification",
+      "status": "success",
+      "steps": [
+        {
+          "step": "Workflow loaded from Excel",
+          "status": "success",
+          "detail": "WF008: SEO Keyword Classification"
+        },
+        {
+          "step": "Deduplicate and classify keyword intent",
+          "status": "success",
+          "detail": "4 unique keywords classified"
+        }
+      ],
+      "result": {
+        "keyword_report": [
+          {
+            "keyword": "how to choose a laptop stand",
+            "intent": "commercial",
+            "category": "Accessories",
+            "priority": "medium",
+            "recommended_target_page": "Category/comparison page"
+          },
+          {
+            "keyword": "buy wireless mouse",
+            "intent": "transactional",
+            "category": "Accessories",
+            "priority": "high",
+            "recommended_target_page": "Product page"
+          },
+          {
+            "keyword": "wireless mouse price",
+            "intent": "transactional",
+            "category": "Accessories",
+            "priority": "high",
+            "recommended_target_page": "Product page"
+          },
+          {
+            "keyword": "Acme store",
+            "intent": "navigational",
+            "category": "General",
+            "priority": "low",
+            "recommended_target_page": "Brand page"
+          }
+        ]
+      },
+      "executed_at": "2026-10-19T12:16:15",
+      "selection": {
+        "workflow_id": "WF008",
+        "workflow_name": "SEO Keyword Classification",
+        "confidence": 0.6,
+        "rationale": "Selected using keyword-based fallback; configure OPENAI_API_KEY for LLM routing.",
+        "router": "Fallback"
+      },
+      "workflow_definition": {
+        "trigger": "User uploads or provides a keyword list",
+        "inputs": "Keyword CSV; product/category information",
+        "steps": "Read keywords → remove duplicates → classify search intent → map keywords to categories → identify high-priority keywords → export results",
+        "decision_logic": "Classify each keyword as informational, commercial, transactional, or navigational",
+        "tools_required": "CSV reader; LLM/classifier",
+        "expected_output": "Keyword report with intent, category, priority, and recommended target page"
+      }
+    }
+  },
+  {
+    "request": "Assign this urgent task to the best available developer.",
+    "inputs": {
+      "task_description": "Build a FastAPI integration",
+      "required_skills": [
+        "python",
+        "api",
+        "fastapi"
+      ],
+      "priority": "urgent",
+      "deadline": "2026-10-22"
+    },
+    "output": {
+      "workflow_id": "WF009",
+      "workflow_name": "Employee Task Assignment",
+      "status": "success",
+      "steps": [
+        {
+          "step": "Workflow loaded from Excel",
+          "status": "success",
+          "detail": "WF009: Employee Task Assignment"
+        },
+        {
+          "step": "Match skills and evaluate workload",
+          "status": "success",
+          "detail": "2 suitable candidates"
+        }
+      ],
+      "result": {
+        "recommended_employee": "Asha",
+        "reasoning": "Highest combined skill-match and capacity score (0.9).",
+        "priority": "urgent",
+        "deadline": "2026-10-22",
+        "task_summary": "Build a FastAPI integration",
+        "ranked_candidates": [
+          {
+            "name": "Asha",
+            "skills": [
+              "python",
+              "api",
+              "fastapi",
+              "automation"
+            ],
+            "active_tasks": 2,
+            "capacity": 5,
+            "available_slots": 3,
+            "score": 0.9
+          },
+          {
+            "name": "Meera",
+            "skills": [
+              "javascript",
+              "react",
+              "api"
+            ],
+            "active_tasks": 1,
+            "capacity": 4,
+            "available_slots": 3,
+            "score": 0.688
+          },
+          {
+            "name": "Ravi",
+            "skills": [
+              "python",
+              "machine learning",
+              "llm"
+            ],
+            "active_tasks": 5,
+            "capacity": 5,
+            "available_slots": 0,
+            "score": 0.25
+          }
+        ]
+      },
+      "executed_at": "2026-10-19T12:16:15",
+      "selection": {
+        "workflow_id": "WF009",
+        "workflow_name": "Employee Task Assignment",
+        "confidence": 0.6,
+        "rationale": "Selected using keyword-based fallback; configure OPENAI_API_KEY for LLM routing.",
+        "router": "Fallback"
+      },
+      "workflow_definition": {
+        "trigger": "Manager asks the agent to assign a task",
+        "inputs": "Task description; employee list; skills; workload; priority; deadline",
+        "steps": "Understand task requirements → compare employee skills → check current workload → rank candidates → select employee → generate assignment summary",
+        "decision_logic": "Prefer employees with required skills and available capacity; escalate if no suitable employee exists",
+        "tools_required": "Employee/task database; ranking logic",
+        "expected_output": "Recommended employee, reasoning, priority, deadline, and task summary"
+      }
+    }
+  },
+  {
+    "request": "Which workflows are failing most often?",
+    "inputs": {},
+    "output": {
+      "workflow_id": "WF010",
+      "workflow_name": "Workflow Performance Report",
+      "status": "success",
+      "steps": [
+        {
+          "step": "Workflow loaded from Excel",
+          "status": "success",
+          "detail": "WF010: Workflow Performance Report"
+        },
+        {
+          "step": "Aggregate execution logs",
+          "status": "success",
+          "detail": "7 executions analyzed"
+        },
+        {
+          "step": "Calculate metrics and identify issues",
+          "status": "success",
+          "detail": "42.86% overall failure rate"
+        }
+      ],
+      "result": {
+        "total_executions": 7,
+        "successes": 4,
+        "failures": 3,
+        "failure_rate_percent": 42.86,
+        "average_execution_seconds": 4.26,
+        "workflows": [
+          {
+            "workflow_id": "WF001",
+            "total": 1,
+            "failures": 0,
+            "avg_seconds": 1.2,
+            "failure_rate_percent": 0.0
+          },
+          {
+            "workflow_id": "WF002",
+            "total": 2,
+            "failures": 2,
+            "avg_seconds": 4.8,
+            "failure_rate_percent": 100.0
+          },
+          {
+            "workflow_id": "WF003",
+            "total": 1,
+            "failures": 0,
+            "avg_seconds": 2.0,
+            "failure_rate_percent": 0.0
+          },
+          {
+            "workflow_id": "WF004",
+            "total": 1,
+            "failures": 0,
+            "avg_seconds": 8.0,
+            "failure_rate_percent": 0.0
+          },
+          {
+            "workflow_id": "WF005",
+            "total": 1,
+            "failures": 0,
+            "avg_seconds": 1.5,
+            "failure_rate_percent": 0.0
+          },
+          {
+            "workflow_id": "WF006",
+            "total": 1,
+            "failures": 1,
+            "avg_seconds": 7.5,
+            "failure_rate_percent": 100.0
+          }
+        ],
+        "frequent_errors": {
+          "Vendor file missing": 1,
+          "Timeout": 1,
+          "Similarity threshold exceeded": 1
+        },
+        "recommendations": [
+          "Investigate workflows with failure rates above 10%.",
+          "Add timeouts and retries for transient API failures.",
+          "Instrument slow steps with duration metrics."
+        ]
+      },
+      "executed_at": "2026-10-19T12:16:15",
+      "selection": {
+        "workflow_id": "WF010",
+        "workflow_name": "Workflow Performance Report",
+        "confidence": 0.6,
+        "rationale": "Selected using keyword-based fallback; configure OPENAI_API_KEY for LLM routing.",
+        "router": "Fallback"
+      },
+      "workflow_definition": {
+        "trigger": "User asks for a performance report",
+        "inputs": "Workflow execution logs",
+        "steps": "Load execution logs → calculate success/failure rate → calculate average execution time → identify frequent errors → identify slow steps → generate recommendations",
+        "decision_logic": "Flag workflows with failure rate above 10% or average execution time above defined threshold",
+        "tools_required": "CSV/database reader; calculator; reporting",
+        "expected_output": "Performance summary with metrics, problem areas, and improvement recommendations"
+      }
+    }
+  }
+]
